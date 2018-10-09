@@ -5,14 +5,14 @@ class PhotoHeader extends Component {
         return (
             <header className="foto-header">
                 <figure className="foto-usuario">
-                    <img src="http://dummyimage.com/100x100" alt="foto do usuario"/>
+                    <img src={this.props.photo.urlPerfil} alt={this.props.photo.loginUsuario}/>
                     <figcaption className="foto-usuario">
                         <a href="#">
-                            alots
+                            {this.props.photo.loginUsuario}
                         </a>
                     </figcaption>
                 </figure>
-                <time className="foto-data">03/10/2016 20:13</time>
+                <time className="foto-data">{this.props.photo.horario}</time>
             </header>
         )
     }
@@ -24,41 +24,36 @@ class PhotoInfo extends Component {
             <div className="foto-info">
                 <div className="foto-info-likes">
 
-                    <a href="#">
-                        alots_ssa
-                    </a>
+                    {
+                        this.props.photo.likers.map((item) => {
+                            return (
+                                <a href="#">
+                                    {item.login},
+                                </a>
+                            )
+                        })
+                    }
 
-                    ,
-
-                    <a href="#">
-                        rafael_rollo
-                    </a>
-
-                    curtiram
+                    {this.props.photo.likers.length ? 'curtiram' : ''}
 
                 </div>
 
                 <p className="foto-info-legenda">
                     <a className="foto-info-autor">autor </a>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est, illo?
+                    {this.props.photo.comentario}
                 </p>
 
                 <ul className="foto-info-comentarios">
-                    <li className="comentario">
-                        <a className="foto-info-autor">seguidor </a>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem ad, molestiae.
-                    </li>
-                    <li className="comentario">
-                        <a className="foto-info-autor">seguidor </a>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt cumque earum molestias
-                        voluptatem modi nihil sit magnam ratione eveniet distinctio magni error asperiores
-                        dignissimos tempora expedita, laborum ex soluta hic maiores veritatis deserunt.
-                    </li>
-                    <li className="comentario">
-                        <a className="foto-info-autor">seguidor </a>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum laudantium quae ab fuga odio
-                        delectus maiores voluptatibus sit commodi quidem.
-                    </li>
+                    {
+                        this.props.photo.comentarios.map((item) => {
+                            return (
+                                <li className="comentario">
+                                    <a className="foto-info-autor">{item.login}</a>
+                                    {item.texto}
+                                </li>
+                            )
+                        })
+                    }
                 </ul>
             </div>
         )
@@ -80,13 +75,13 @@ class PhotoUpdates extends Component {
     }
 }
 
-export default class Photo extends Component {
+export default class PhotoItem extends Component {
     render() {
         return (
             <div className="foto">
-                <PhotoHeader/>
-                <img alt="foto" className="foto-src" src="http://dummyimage.com/600x600"/>
-                <PhotoInfo/>
+                <PhotoHeader photo={this.props.photo}/>
+                <img alt="foto" className="foto-src" src={this.props.photo.urlFoto}/>
+                <PhotoInfo photo={this.props.photo}/>
                 <PhotoUpdates/>
             </div>
         );
