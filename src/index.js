@@ -32,6 +32,7 @@ ReactDOM.render(
     <BrowserRouter>
         <Switch>
             <Route path="/" exact={true} component={Login}/>
+            <Route path="/timeline/:slug" component={App}/>
             <PrivateRoute path="/timeline" component={App}/>
             <PrivateRoute path="/logout" component={Logout}/>
         </Switch>
