@@ -19,7 +19,10 @@ export default class Login extends Component {
         };
 
         axios.post('https://instalura-api.herokuapp.com/api/public/login', data)
-            .then((res) => console.log(res))
+            .then((res) => {
+                localStorage.setItem('token', res.data);
+                this.props.history.push('/timeline');
+            })
             .catch((err) => this.setState({msg: err.message}));
     }
 

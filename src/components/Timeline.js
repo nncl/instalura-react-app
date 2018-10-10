@@ -10,7 +10,8 @@ export default class Timeline extends Component {
     }
 
     componentDidMount() {
-        axios.get("https://instalura-api.herokuapp.com/api/public/fotos/alots")
+        const token = localStorage.getItem('token');
+        axios.get(`https://instalura-api.herokuapp.com/api/fotos?X-AUTH-TOKEN=${token}`)
             .then((results) => this.setState({results: results.data}));
     }
 
