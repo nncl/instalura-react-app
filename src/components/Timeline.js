@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import PhotoItem from "./Photo";
+import axios from "axios";
 
 export default class Timeline extends Component {
 
@@ -9,9 +10,8 @@ export default class Timeline extends Component {
     }
 
     componentDidMount() {
-        fetch("https://instalura-api.herokuapp.com/api/public/fotos/alots")
-            .then((res) => res.json())
-            .then((results) => this.setState({results}));
+        axios.get("https://instalura-api.herokuapp.com/api/public/fotos/alots")
+            .then((results) => this.setState({results: results.data}));
     }
 
     render() {
