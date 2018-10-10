@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import Login from './components/Login';
+import Logout from './components/Logout';
 import * as serviceWorker from './serviceWorker';
 import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom'
 
@@ -32,6 +33,7 @@ ReactDOM.render(
         <Switch>
             <Route path="/" exact={true} component={Login}/>
             <PrivateRoute path="/timeline" component={App}/>
+            <PrivateRoute path="/logout" component={Logout}/>
         </Switch>
     </ BrowserRouter>
     , document.getElementById('root'));
