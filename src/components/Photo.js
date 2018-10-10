@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import {Link} from "react-router-dom";
 
 class PhotoHeader extends Component {
     render() {
@@ -7,9 +8,9 @@ class PhotoHeader extends Component {
                 <figure className="foto-usuario">
                     <img src={this.props.photo.urlPerfil} alt={this.props.photo.loginUsuario}/>
                     <figcaption className="foto-usuario">
-                        <a href="#">
+                        <Link to={`/timeline/${this.props.photo.loginUsuario}`}>
                             {this.props.photo.loginUsuario}
-                        </a>
+                        </Link>
                     </figcaption>
                 </figure>
                 <time className="foto-data">{this.props.photo.horario}</time>
@@ -27,9 +28,9 @@ class PhotoInfo extends Component {
                     {
                         this.props.photo.likers.map((item) => {
                             return (
-                                <a href="#">
+                                <Link to={`/timeline/${item.login}`}>
                                     {item.login},
-                                </a>
+                                </Link>
                             )
                         })
                     }
@@ -39,16 +40,16 @@ class PhotoInfo extends Component {
                 </div>
 
                 <p className="foto-info-legenda">
-                    <a className="foto-info-autor">autor </a>
+                    <Link to="" className="foto-info-autor">autor </Link>
                     {this.props.photo.comentario}
                 </p>
 
                 <ul className="foto-info-comentarios">
                     {
-                        this.props.photo.comentarios.map((item) => {
+                        this.props.photo.comentarios.map((item, i) => {
                             return (
-                                <li className="comentario">
-                                    <a className="foto-info-autor">{item.login}</a>
+                                <li className="comentario" key={i}>
+                                    <Link to={`/timeline/${item.login}`} className="foto-info-autor">{item.login}</Link>
                                     {item.texto}
                                 </li>
                             )
@@ -64,7 +65,7 @@ class PhotoUpdates extends Component {
     render() {
         return (
             <section className="fotoAtualizacoes">
-                <a href="#" className="fotoAtualizacoes-like">Likar</a>
+                <Link to="" className="fotoAtualizacoes-like">Likar</Link>
                 <form className="fotoAtualizacoes-form">
                     <input type="text" placeholder="Adicione um comentário..."
                            className="fotoAtualizacoes-form-campo"/>
