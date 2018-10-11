@@ -9,6 +9,14 @@ export default class Login extends Component {
         this.send = this.send.bind(this);
     }
 
+    componentDidMount() {
+        this.isLoggedIn();
+    }
+
+    isLoggedIn() {
+        if (localStorage.getItem('token')) this.props.history.push('/timeline');
+    }
+
     send(e) {
         e.preventDefault();
         this.setState({msg: null});
