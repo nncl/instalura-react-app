@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {Link} from "react-router-dom";
+import axios from "axios";
 
 class PhotoHeader extends Component {
     render() {
@@ -26,22 +27,26 @@ class PhotoInfo extends Component {
                 <div className="foto-info-likes">
 
                     {
-                        this.props.photo.likers.map((item) => {
+                        this.props.photo.likers.map((item, i) => {
                             return (
-                                <Link to={`/timeline/${item.login}`}>
-                                    {item.login},
+                                <Link to={`/timeline/${item.login}`} key={i}>
+                                    {item.login}
+                                    <span>
+                                        {(i + 1) === this.props.photo.likers.length ? ' ' : ', '}
+                                    </span>
                                 </Link>
                             )
                         })
                     }
 
-                    {this.props.photo.likers.length ? 'curtiram' : ''}
+                    {this.props.photo.likers.length > 1 ? 'curtiram' : ''}
+                    {this.props.photo.likers.length === 1 ? 'curtiu' : ''}
 
                 </div>
 
                 <p className="foto-info-legenda">
-                    <Link to="" className="foto-info-autor">autor </Link>
-                    {this.props.photo.comentario}
+                    <Link to="" className="foto-info-autor">autor</Link>
+                    <span> {this.props.photo.comentario}</span>
                 </p>
 
                 <ul className="foto-info-comentarios">
@@ -62,10 +67,39 @@ class PhotoInfo extends Component {
 }
 
 class PhotoUpdates extends Component {
+
+    constructor() {
+        super();
+        this.state = {liked: false};
+    }
+
+    componentDidMount() {
+        this.setState({liked: this.props.photo.likeada});
+    }
+
+    doLike(e) {
+        e.preventDefault();
+
+        const token = localStorage.getItem('token')
+            , data = {};
+
+        axios.post(`https://instalura-api.herokuapp.com/api/fotos/${this.props.photo.id}/like?X-AUTH-TOKEN=${token}`, data)
+            .then(() => {
+                this.setState({liked: !this.state.liked})
+            })
+            .catch((err) => console.error(err));
+    }
+
     render() {
+        const myClasses = `fotoAtualizacoes-like ${this.state.liked ? 'fotoAtualizacoes-like-active' : ''}`;
+
         return (
             <section className="fotoAtualizacoes">
-                <Link to="" className="fotoAtualizacoes-like">Likar</Link>
+                <a onClick={this.doLike.bind(this)}
+                   className={myClasses}>
+                    Likar
+                </a>
+
                 <form className="fotoAtualizacoes-form">
                     <input type="text" placeholder="Adicione um comentário..."
                            className="fotoAtualizacoes-form-campo"/>
@@ -83,7 +117,7 @@ export default class PhotoItem extends Component {
                 <PhotoHeader photo={this.props.photo}/>
                 <img alt="foto" className="foto-src" src={this.props.photo.urlFoto}/>
                 <PhotoInfo photo={this.props.photo}/>
-                <PhotoUpdates/>
+                <PhotoUpdates photo={this.props.photo}/>
             </div>
         );
     }
