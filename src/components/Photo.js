@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Link} from "react-router-dom";
 import axios from "axios";
+import PubSub from "pubsub-js";
 
 class PhotoHeader extends Component {
     render() {
@@ -21,26 +22,53 @@ class PhotoHeader extends Component {
 }
 
 class PhotoInfo extends Component {
+
+    constructor() {
+        super();
+        this.state = {likers: []};
+    }
+
+    componentWillMount() {
+        PubSub.subscribe('update:liker', (topic, data) => {
+            if (this.props.photo.id === data.photoId) {
+                const exists = this.state.likers.find((liker) => liker.login === data.liker);
+                let newLikers = [];
+
+                if (exists) {
+                    newLikers = this.state.likers.filter((liker) => liker.login !== data.liker);
+                } else {
+                    newLikers = this.state.likers.concat({login: data.liker});
+                }
+
+                this.setState({likers: newLikers});
+            }
+        });
+    }
+
+    componentDidMount() {
+        this.setState({likers: this.props.photo.likers});
+    }
+
     render() {
         return (
             <div className="foto-info">
                 <div className="foto-info-likes">
 
                     {
-                        this.props.photo.likers.map((item, i) => {
+                        this.state.likers.map((item, i) => {
                             return (
                                 <Link to={`/timeline/${item.login}`} key={i}>
                                     {item.login}
                                     <span>
-                                        {(i + 1) === this.props.photo.likers.length ? ' ' : ', '}
+                                        {(i + 1) === this.state.likers.length ? ' ' : ', '}
                                     </span>
                                 </Link>
                             )
                         })
                     }
 
-                    {this.props.photo.likers.length > 1 ? 'curtiram' : ''}
-                    {this.props.photo.likers.length === 1 ? 'curtiu' : ''}
+                    {this.state.likers.length > 1 ? 'curtiram' : ''}
+                    {this.state.likers.length === 1 ? 'curtiu' : ''}
 
                 </div>
 
@@ -84,8 +112,9 @@ class PhotoUpdates extends Component {
             , data = {};
 
         axios.post(`https://instalura-api.herokuapp.com/api/fotos/${this.props.photo.id}/like?X-AUTH-TOKEN=${token}`, data)
-            .then(() => {
-                this.setState({liked: !this.state.liked})
+            .then((res) => {
+                this.setState({liked: !this.state.liked});
+                PubSub.publish('update:liker', {photoId: this.props.photo.id, liker: res.data.login});
             })
             .catch((err) => console.error(err));
     }
