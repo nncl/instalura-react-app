@@ -111,6 +111,7 @@ You can find the most recent version of this guide [here](https://github.com/fac
 
 - Update liker, as `update:liker`
 - Update comment, as `update:comment`
+- Timeline search, as `timeline`
 
 ## Updating to New Releases
 

@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import PhotoItem from "./Photo";
 import axios from "axios";
+import PubSub from "pubsub-js";
 import {ClipLoader} from 'react-spinners';
 
 export default class Timeline extends Component {
@@ -8,6 +9,10 @@ export default class Timeline extends Component {
     constructor() {
         super();
         this.state = {results: [], loading: false};
+    }
+
+    componentWillMount() {
+        PubSub.subscribe('timeline', (topic, data) => this.setState({results: data}));
     }
 
     componentDidMount() {
