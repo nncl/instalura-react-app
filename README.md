@@ -110,6 +110,7 @@ You can find the most recent version of this guide [here](https://github.com/fac
 ## Apps Events
 
 - Update liker, as `update:liker`
+- Update comment, as `update:comment`
 
 ## Updating to New Releases
 

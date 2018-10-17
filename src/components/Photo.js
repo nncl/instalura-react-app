@@ -25,7 +25,7 @@ class PhotoInfo extends Component {
 
     constructor() {
         super();
-        this.state = {likers: []};
+        this.state = {likers: [], comments: []};
     }
 
     componentWillMount() {
@@ -43,10 +43,17 @@ class PhotoInfo extends Component {
                 this.setState({likers: newLikers});
             }
         });
+
+        PubSub.subscribe('update:comment', (topic, data) => {
+            if (this.props.photo.id === data.photoId) {
+                const newComments = this.state.comments.concat(data.comment);
+                this.setState({comments: newComments});
+            }
+        });
     }
 
     componentDidMount() {
-        this.setState({likers: this.props.photo.likers});
+        this.setState({likers: this.props.photo.likers, comments: this.props.photo.comentarios});
     }
 
     render() {
@@ -79,11 +86,11 @@ class PhotoInfo extends Component {
 
                 <ul className="foto-info-comentarios">
                     {
-                        this.props.photo.comentarios.map((item, i) => {
+                        this.state.comments.map((item, i) => {
                             return (
                                 <li className="comentario" key={i}>
                                     <Link to={`/timeline/${item.login}`} className="foto-info-autor">{item.login}</Link>
-                                    {item.texto}
+                                    &nbsp;{item.texto}
                                 </li>
                             )
                         })
@@ -119,6 +126,20 @@ class PhotoUpdates extends Component {
             .catch((err) => console.error(err));
     }
 
+    doComment(e) {
+        e.preventDefault();
+        if (this.comment.value) {
+            const token = localStorage.getItem('token')
+                , data = {texto: this.comment.value};
+
+            axios.post(`https://instalura-api.herokuapp.com/api/fotos/${this.props.photo.id}/comment?X-AUTH-TOKEN=${token}`, data)
+                .then((res) => {
+                    PubSub.publish('update:comment', {photoId: this.props.photo.id, comment: res.data});
+                    this.comment.value = null;
+                });
+        }
+    }
+
     render() {
         const myClasses = `fotoAtualizacoes-like ${this.state.liked ? 'fotoAtualizacoes-like-active' : ''}`;
 
@@ -129,9 +150,11 @@ class PhotoUpdates extends Component {
                     Likar
                 </a>
 
-                <form className="fotoAtualizacoes-form">
-                    <input type="text" placeholder="Adicione um comentário..."
-                           className="fotoAtualizacoes-form-campo"/>
+                <form className="fotoAtualizacoes-form" onSubmit={this.doComment.bind(this)}>
+                    <input type="text"
+                           placeholder="Adicione um comentário..."
+                           className="fotoAtualizacoes-form-campo"
+                           ref={input => this.comment = input}/>
                     <input type="submit" value="Comentar!" className="fotoAtualizacoes-form-submit"/>
                 </form>
             </section>
