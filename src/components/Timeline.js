@@ -3,6 +3,7 @@ import PhotoItem from "./Photo";
 import axios from "axios";
 import PubSub from "pubsub-js";
 import {ClipLoader} from 'react-spinners';
+import {CSSTransitionGroup} from 'react-transition-group';
 
 export default class Timeline extends Component {
 
@@ -40,9 +41,14 @@ export default class Timeline extends Component {
                 </div>
 
                 <div className="fotos container">
-                    {
-                        this.state.results.map((item, i) => <PhotoItem key={i} photo={item}/>)
-                    }
+                    <CSSTransitionGroup
+                        transitionName="timeline"
+                        transitionEnterTimeout={500}
+                        transitionLeaveTimeout={300}>
+                        {
+                            this.state.results.map((item, i) => <PhotoItem key={i} photo={item}/>)
+                        }
+                    </CSSTransitionGroup>
                 </div>
             </div>
         );
