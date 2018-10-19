@@ -114,30 +114,14 @@ class PhotoUpdates extends Component {
 
     doLike(e) {
         e.preventDefault();
-
-        const token = localStorage.getItem('token')
-            , data = {};
-
-        axios.post(`https://instalura-api.herokuapp.com/api/fotos/${this.props.photo.id}/like?X-AUTH-TOKEN=${token}`, data)
-            .then((res) => {
-                this.setState({liked: !this.state.liked});
-                PubSub.publish('update:liker', {photoId: this.props.photo.id, liker: res.data.login});
-            })
-            .catch((err) => console.error(err));
+        this.setState({liked: !this.state.liked});
+        this.props.doLike(this.props.photo.id);
     }
 
     doComment(e) {
         e.preventDefault();
-        if (this.comment.value) {
-            const token = localStorage.getItem('token')
-                , data = {texto: this.comment.value};
-
-            axios.post(`https://instalura-api.herokuapp.com/api/fotos/${this.props.photo.id}/comment?X-AUTH-TOKEN=${token}`, data)
-                .then((res) => {
-                    PubSub.publish('update:comment', {photoId: this.props.photo.id, comment: res.data});
-                    this.comment.value = null;
-                });
-        }
+        this.props.doComment(this.props.photo.id, this.comment.value);
+        this.comment.value = null;
     }
 
     render() {
@@ -169,7 +153,7 @@ export default class PhotoItem extends Component {
                 <PhotoHeader photo={this.props.photo}/>
                 <img alt="foto" className="foto-src" src={this.props.photo.urlFoto}/>
                 <PhotoInfo photo={this.props.photo}/>
-                <PhotoUpdates photo={this.props.photo}/>
+                <PhotoUpdates photo={this.props.photo} doLike={this.props.doLike} doComment={this.props.doComment}/>
             </div>
         );
     }

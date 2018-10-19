@@ -28,6 +28,25 @@ export default class Timeline extends Component {
             .catch(() => this.setState({loading: false}));
     }
 
+    doLike(photoId) {
+        const token = localStorage.getItem('token')
+            , data = {};
+
+        axios.post(`https://instalura-api.herokuapp.com/api/fotos/${photoId}/like?X-AUTH-TOKEN=${token}`, data)
+            .then((res) => PubSub.publish('update:liker', {photoId, liker: res.data.login}))
+            .catch((err) => console.error(err));
+    }
+
+    doComment(photoId, comment) {
+        if (comment) {
+            const token = localStorage.getItem('token')
+                , data = {texto: comment};
+
+            axios.post(`https://instalura-api.herokuapp.com/api/fotos/${photoId}/comment?X-AUTH-TOKEN=${token}`, data)
+                .then((res) => PubSub.publish('update:comment', {photoId, comment: res.data}));
+        }
+    }
+
     render() {
         return (
             <div>
@@ -46,7 +65,7 @@ export default class Timeline extends Component {
                         transitionEnterTimeout={500}
                         transitionLeaveTimeout={300}>
                         {
-                            this.state.results.map((item, i) => <PhotoItem key={i} photo={item}/>)
+                            this.state.results.map((item, i) => <PhotoItem key={i} photo={item} doLike={this.doLike} doComment={this.doComment}/>)
                         }
                     </CSSTransitionGroup>
                 </div>
