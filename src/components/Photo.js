@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {Link} from "react-router-dom";
-import axios from "axios";
 import PubSub from "pubsub-js";
 
 class PhotoHeader extends Component {
@@ -153,7 +152,7 @@ export default class PhotoItem extends Component {
                 <PhotoHeader photo={this.props.photo}/>
                 <img alt="foto" className="foto-src" src={this.props.photo.urlFoto}/>
                 <PhotoInfo photo={this.props.photo}/>
-                <PhotoUpdates photo={this.props.photo} doLike={this.props.doLike} doComment={this.props.doComment}/>
+                <PhotoUpdates {...this.props} />
             </div>
         );
     }
