@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {Link} from "react-router-dom";
-import PubSub from "pubsub-js";
 
 class PhotoHeader extends Component {
     render() {
@@ -21,60 +20,26 @@ class PhotoHeader extends Component {
 }
 
 class PhotoInfo extends Component {
-
-    constructor() {
-        super();
-        this.state = {likers: [], comments: []};
-    }
-
-    componentWillMount() {
-        PubSub.subscribe('update:liker', (topic, data) => {
-            if (this.props.photo.id === data.photoId) {
-                const exists = this.state.likers.find((liker) => liker.login === data.liker);
-                let newLikers = [];
-
-                if (exists) {
-                    newLikers = this.state.likers.filter((liker) => liker.login !== data.liker);
-                } else {
-                    newLikers = this.state.likers.concat({login: data.liker});
-                }
-
-                this.setState({likers: newLikers});
-            }
-        });
-
-        PubSub.subscribe('update:comment', (topic, data) => {
-            if (this.props.photo.id === data.photoId) {
-                const newComments = this.state.comments.concat(data.comment);
-                this.setState({comments: newComments});
-            }
-        });
-    }
-
-    componentDidMount() {
-        this.setState({likers: this.props.photo.likers, comments: this.props.photo.comentarios});
-    }
-
     render() {
         return (
             <div className="foto-info">
                 <div className="foto-info-likes">
 
                     {
-                        this.state.likers.map((item, i) => {
+                        this.props.photo.likers.map((item, i) => {
                             return (
                                 <Link to={`/timeline/${item.login}`} key={i}>
                                     {item.login}
                                     <span>
-                                        {(i + 1) === this.state.likers.length ? ' ' : ', '}
+                                        {(i + 1) === this.props.photo.likers.length ? ' ' : ', '}
                                     </span>
                                 </Link>
                             )
                         })
                     }
 
-                    {this.state.likers.length > 1 ? 'curtiram' : ''}
-                    {this.state.likers.length === 1 ? 'curtiu' : ''}
+                    {this.props.photo.likers.length > 1 ? 'curtiram' : ''}
+                    {this.props.photo.likers.length === 1 ? 'curtiu' : ''}
 
                 </div>
 
@@ -85,7 +50,7 @@ class PhotoInfo extends Component {
 
                 <ul className="foto-info-comentarios">
                     {
-                        this.state.comments.map((item, i) => {
+                        this.props.photo.comentarios.map((item, i) => {
                             return (
                                 <li className="comentario" key={i}>
                                     <Link to={`/timeline/${item.login}`} className="foto-info-autor">{item.login}</Link>
@@ -102,18 +67,8 @@ class PhotoInfo extends Component {
 
 class PhotoUpdates extends Component {
 
-    constructor() {
-        super();
-        this.state = {liked: false};
-    }
-
-    componentDidMount() {
-        this.setState({liked: this.props.photo.likeada});
-    }
-
     doLike(e) {
         e.preventDefault();
-        this.setState({liked: !this.state.liked});
         this.props.doLike(this.props.photo.id);
     }
 
@@ -124,7 +79,7 @@ class PhotoUpdates extends Component {
     }
 
     render() {
-        const myClasses = `fotoAtualizacoes-like ${this.state.liked ? 'fotoAtualizacoes-like-active' : ''}`;
+        const myClasses = `fotoAtualizacoes-like ${this.props.photo.likeada ? 'fotoAtualizacoes-like-active' : ''}`;
 
         return (
             <section className="fotoAtualizacoes">

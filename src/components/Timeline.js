@@ -14,6 +14,32 @@ export default class Timeline extends Component {
 
     componentWillMount() {
         PubSub.subscribe('timeline', (topic, data) => this.setState({results: data}));
+
+        PubSub.subscribe('update:liker', (topic, data) => {
+
+            const photo = this.state.results.find((photo) => photo.id === data.photoId);
+            photo.likeada = !photo.likeada;
+
+            if (photo) {
+                const exists = photo.likers.find((liker) => liker.login === data.liker);
+
+                if (exists) {
+                    const newLikers = photo.likers.filter((liker) => liker.login !== data.liker);
+                    photo.likers = newLikers;
+                } else {
+                    data.login = data.liker;
+                    photo.likers.push(data);
+                }
+
+                this.setState({results: this.state.results});
+            }
+        });
+
+        PubSub.subscribe('update:comment', (topic, data) => {
+            const photo = this.state.results.find((photo) => photo.id === data.photoId);
+            photo.comentarios.push(data.comment);
+            this.setState({results: this.state.results});
+        });
     }
 
     componentDidMount() {
@@ -65,7 +91,8 @@ export default class Timeline extends Component {
                         transitionEnterTimeout={500}
                         transitionLeaveTimeout={300}>
                         {
-                            this.state.results.map((item, i) => <PhotoItem key={i} photo={item} doLike={this.doLike} doComment={this.doComment}/>)
+                            this.state.results.map((item, i) => <PhotoItem key={i} photo={item} doLike={this.doLike}
+                                                                           doComment={this.doComment}/>)
                         }
                     </CSSTransitionGroup>
                 </div>
